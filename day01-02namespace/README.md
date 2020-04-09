@@ -4,37 +4,37 @@
 * 将基于逻辑划分和基于物理划分独立开
 # 写法
 ```
-namespace 名字空间名 {  
-   名字空间成员1;  
-   名字空间成员2;  
-   ...  
-}
-namespace ns {
-    int var = 0;
-    void fun() { ... }
-}
+    namespace 名字空间名 {  
+       名字空间成员1;  
+       名字空间成员2;  
+       ...  
+    }
+    namespace ns {
+        int var = 0;
+        void fun() { ... }
+    }
 ```
 # 名字空间合并
 ```
-namespace ns {  
-   名字空间成员1;  
-   名字空间成员2;  
-}
-namespace ns {
-   名字空间成员3;  
-}
-
-逻辑上是一个名字，但是可以写在不同的文件中（类似其他高级语言的模块或包）
-a.cpp:
-namesapce ns {
-    int var = 0;
-    void fun() { ... }
-}
-
-b.cpp:
-namesapce ns {
-    struct type { ... };
-}
+    namespace ns {  
+       名字空间成员1;  
+       名字空间成员2;  
+    }
+    namespace ns {
+       名字空间成员3;  
+    }
+    
+    逻辑上是一个名字，但是可以写在不同的文件中（类似其他高级语言的模块或包）
+    a.cpp:
+    namesapce ns {
+        int var = 0;
+        void fun() { ... }
+    }
+    
+    b.cpp:
+    namesapce ns {
+        struct type { ... };
+    }
 ```
 # 使用名字空间中的名字
 * 通过作用域限定操作符"::"
@@ -54,33 +54,33 @@ namesapce ns {
 # 无名名字空间
 C++会将不属于任何有名名字空间的名字通通放入无名名字空间中。对于无名名字空间中的名字，可以直接通过"::"访问。  
 ```
-int y = 7777;
-namespace nv {
-    int y = 8888;
-
-    void fun() {
-        // 使用无名名字空间中的y
-        std::cout << ::y << std::endl; // 7777
+    int y = 7777;
+    namespace nv {
+        int y = 8888;
+    
+        void fun() {
+            // 使用无名名字空间中的y
+            std::cout << ::y << std::endl; // 7777
+        }
     }
-}
 ```
 # 名字空间嵌套 
 ```
-namespace ns1 {
-    int a = 1;
-    namespace ns2 {
-        int a = 2;
-        namespace ns3 {
-            int a = 3;
-        }
-    }        
-}
-
-std::cout << ns1::a << std::endl;
-std::cout << ns1::ns2::a << std::endl;
-std::cout << ns1::ns2::ns3::a << std::endl;
-
-// 取别名
-namespace ns123 = ns1::ns2::ns3;
-std::cout << ns123::a << std::endl;
+    namespace ns1 {
+        int a = 1;
+        namespace ns2 {
+            int a = 2;
+            namespace ns3 {
+                int a = 3;
+            }
+        }        
+    }
+    
+    std::cout << ns1::a << std::endl;
+    std::cout << ns1::ns2::a << std::endl;
+    std::cout << ns1::ns2::ns3::a << std::endl;
+    
+    // 取别名
+    namespace ns123 = ns1::ns2::ns3;
+    std::cout << ns123::a << std::endl;
 ```
