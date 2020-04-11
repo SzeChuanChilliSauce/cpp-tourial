@@ -1,6 +1,6 @@
 # 字符串
 ## C++提供来专门的字符串类型：string
-```
+```c++
     std::string s1 = "hello";
     std::cout << s1 << std::endl;
     // 拼接
@@ -24,7 +24,7 @@
 ```
 # 布尔类型
 ## bool：true / false
-```
+```c++
     bool b = true;
     std::cout << b << std::endl;                    // 1
     std::cout << std::boolalpha <<  b << std::endl; // true

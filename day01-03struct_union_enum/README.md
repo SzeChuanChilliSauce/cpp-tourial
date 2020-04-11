@@ -1,6 +1,6 @@
 # struct union enum
 ## C++中可以省略关键字
-```
+```c++
     struct Student { ... };
     struct Student s1 = { ... };  // C
     Student s2 = { ... };         // C++
@@ -14,7 +14,7 @@
     COLOR c2;            // C++
 ```
 ## C++的结构体可以定义函数，而且在这些函数中可以直接访问结构体的字段（成员变量）
-```
+```c++
     struct Student {
         // 成员变量
         char name[128];
@@ -33,7 +33,7 @@
     p->who();
 ```
 ## C++中可以定义匿名联合（是一种使不同变量共用内存的方法）
-```
+```c++
     union {
         int n;
         char c[4];
@@ -47,7 +47,7 @@
     std::cout << std::endl;
 ```
 ## C++中的枚举不能和整型通用
-```
+```c++
     enum Color { RED, GREEN, BLUE };
     
     void foo(int n) { }
