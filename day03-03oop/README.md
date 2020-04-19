@@ -123,7 +123,7 @@ B.用new操作符创建对象，堆对象。
 ```
 # 四、构造函数与初始化表
 ## 1.构造函数可以重载
-* 构造函数通过其参数表的差异华以重载的形式提供不同的初始化方法。  
+* 构造函数通过其参数表的差异化以重载的形式提供不同的初始化方法。  
 * 重载的构造函数通过构造实参的类型选择匹配。  
 * 使用缺省参数可以减少构造函数重载版本的数量，注意避免重载冲突。  
 ```c++
@@ -474,15 +474,23 @@ B.用new操作符创建对象，堆对象。
         }
     
     private:
+        // 先初始化_len，后初始化_str
         int _len;
         std::string _str;
     };
 
-    D d("hello, world.");
-    d.show(); // _str=hello, world., _len=-1102640736
+    D d("hello, world!");
+    d.show(); // _str=hello, world!, _len=-1102640736
+    // 初始化_len的时候还没有初始化_str，因此_len是垃圾值
 ```
 * 成员变量是数组和结构的时候
 ```c++
+    struct Date {
+        int _year;
+        int _mon;
+        int _day;
+    };
+    
     class E {
     public:
         E(int arr[], const Date& d) :
