@@ -3,15 +3,15 @@ C++是一门高性能（全看个人水品）的高级编程语言。要想写�
 ## 第一天
 * 名字空间（namespace）
 * 结构（struct）、枚举（enum）、联合（union）
-* 字符串（string）
+* 字符串（string）、布尔（bool）
 
 ## 第二天
-* 重载
-* 缺省（默认）参数
+* 重载（overload）
+* 缺省（默认）参数（default args）、哑元、内联（inline）
 * 动态内存分配（new/delete）
 
 ## 第三天
-* 引用
+* 引用（reference）
 * 类型转换（static_cast，dynamic_cast，const_cast，reinterpret_cast）
 * 面向对象（类、对象、构造函数、初始化表）
 
