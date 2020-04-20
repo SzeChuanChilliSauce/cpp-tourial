@@ -41,3 +41,86 @@
     // show在代码区，编译后二进制指令也只有一份，为什么s1、s2都打印各自的信息，不会打印错误或混淆呢？是怎么区分的呢？
     // 因为编译器编译后传了参数，参数就是调用者
 ```
+## 显示使用this指针的场合
+* 解决成员变量的名字冲突。
+* 从成员函数中返回调用对象的自引用。
+* 通过成员函数实现对象间的交互。
+* 在成员函数销毁调用对象自身。
+```c++
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // 1.区分成员变量和局部变量
+    class A {
+    public:
+        A(int* data, int num) {
+            for (int i = 0; i < num; i++) {
+                this->data[i] = data[i];
+            }
+            // 参数和成员便令重名，用this区分
+            this->num = num;
+        }
+    private:
+        int data[1024];
+        int num;
+    };
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // 2.对返回值做连续操作
+    class B {
+    public:
+        B(): _counter(0) {}  
+        B& inc() {
+            ++_counter;
+            return *this; // 返回自引用
+        }
+        int counter() { return _counter; } 
+    private:
+        int _counter;
+    };
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // 3.对象之间交互
+    // 类的短式声明
+    class Student;   
+    class Teacher {
+    public:
+        void teach(Student* s);
+        void reply(const char* answer) { _answer = answer; }
+    private:
+        std::string _answer;
+    };
+    
+    class Student {
+    public:
+        void acceptQuestion(const char* question, Teacher* t) {
+            std::cout << "老师提问: " << question << std::endl;
+            t->reply("我不知道");
+        }
+    };
+    
+    void Teacher::teach(Student* s) {
+        s->acceptQuestion("什么是this指针?", this);
+        std::cout << "学生回答: "  << _answer << std::endl;
+    }
+
+    Teacher t;
+    Student s;
+    t.teach(&s);
+    //////////////////////////////////////////////////////////////////////////////////////
+    // 4.对象自我毁灭
+    class C {
+    public:
+        A() { std::cout << "我出生了" << std::endl; }
+
+        // 析构函数
+        ~A() { std::cout << "我要死了" << std::endl; }
+
+        void work() {
+            std::cout << "工作..." << std::endl;
+            delete this;
+        }   
+    };
+
+    (new A)->work();
+```
+
+
+
+
