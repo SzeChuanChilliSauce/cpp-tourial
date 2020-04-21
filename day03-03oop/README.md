@@ -510,9 +510,12 @@ B.用new操作符创建对象，堆对象。
         Date _date;
     };
     
-    int arr[3]{0,1,2};
-    Date d{2020, 1 1};
-    E e(arr, d);
-    e.show();
+    int main() {
+        int arr[3]{0,1,2};
+        Date d{2020, 1 1};
+        E e(arr, d);
+        e.show();
+        return 0;
+    }
 ```
 
