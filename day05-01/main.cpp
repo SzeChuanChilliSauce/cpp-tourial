@@ -1,34 +1,63 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
 
-class Complex {
+
+class A {
 public:
-    Complex(int r = 0, int i = 0) : _real(r), _imaginary(i) {}
-
-    void print() const {
-        std::cout << _real << "+" << _imaginary << "i" << std::endl;
+    int& operator[](int i) {
+        return _array[i];
     }
 
-    friend std::ostream& operator<<(std::ostream& lhs, const Complex& rhs) {
-        return lhs << rhs._real << '+' << rhs._imaginary << 'i';
-    }
-
-    friend std::istream& operator >> (std::istream& lhs, Complex& rhs) {
-        return lhs >> rhs._real >> rhs._imaginary;
+    const int& operator[](int i) const {
+        // 显式去常，隐式加常
+        return const_cast<A&>(*this)[i];
     }
 
 private:
-    int _real;
-    int _imaginary;
+    int _array[10];
 };
 
+class B{
+public:
+    int operator()(int x, int y) {
+        return x+y;
+    }
+private:
+};
+
+
+class Integer {
+public:
+    Integer(int i = 0): _i(i) {}
+
+    // 类型转换操作符函数
+    operator int() const {
+        return _i;
+    }
+
+    int _i;
+};
+
+
 int main() {
-    Complex c1, c2;
-    // ::operator>>(::operator>>(cin, c1), c2)
-    std::cin >> c1 >> c2;
-    // ::operator<<(::operator<<(::operator<<(cout, c1), ','), c2);
-    std::cout << c1 << ',' << c2;
-    std::cout << std::endl;
+    A a;
+    a[0] = 100;
+    a[1] = 101;
+    std::cout << a[0] << " " << a[1]<< std::endl;
+    const A& ra = a;
+    std::cout << ra[0] << " " << ra[1]<< std::endl;
+
+    B b;
+    std::cout << b(12, 34) << std::endl;
+
+    Integer x;
+    x = 123;
+    std::cout << x._i << std::endl;
+
+    int y;
+    y = x;
+    std::cout << y << std::endl;
 
     return 0;
 }

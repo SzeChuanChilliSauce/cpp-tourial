@@ -238,8 +238,7 @@ L#R -> L.operator#(R)   // 成员，左调右参
         return 0;
     }
 ```
-（2）赋值类  
-右操作数可以为左值或右值，但左操作数必须为左值，表达式的值是左值，且为左操作数本身（而非副本）。  
+（2）赋值类：右操作数可以为左值或右值，但左操作数必须为左值，表达式的值是左值，且为左操作数本身（而非副本）。  
 ```c++
     class Complex {
     public:
@@ -281,8 +280,7 @@ L#R -> L.operator#(R)   // 成员，左调右参
         return 0;
     }
 ```
-（3）输入输出操作符  
-左操作数是ostream/istream，右操作数对于输出可以是左值也可以是右值，对于输入只能是左值，表达式的值是左操作数本身。    
+（3）输入输出操作符：左操作数是ostream/istream，右操作数对于输出可以是左值也可以是右值，对于输入只能是左值，表达式的值是左操作数本身。
 ```c++
     Complex c1;  
     const Complex c2;  
@@ -330,9 +328,179 @@ L#R -> L.operator#(R)   // 成员，左调右参
     }
 ```
 （4）单目操作符  
-
-
-
+* 运算类：操作数既可以是左值也可以是右值，操作数本身在计算前后不发生变化，表达式的值是右值。  
+```c++
+    class Complex {
+    public:
+        Complex(int r = 0, int i = 0) : _real(r), _imaginary(i) {}
+    
+        void print() const {
+            std::cout << _real << "+" << _imaginary << "i" << std::endl;
+        }
+    
+        friend std::ostream& operator<<(std::ostream& lhs, const Complex& rhs) {
+            return lhs << rhs._real << '+' << rhs._imaginary << 'i';
+        }
+    
+        friend std::istream& operator >> (std::istream& lhs, Complex& rhs) {
+            return lhs >> rhs._real >> rhs._imaginary;
+        }
+    
+        // 成员函数方式
+        // 取反
+        const Complex operator-() const {
+            return Complex(-_real, -_imaginary);
+        }
+        // 全局函数方式
+        // 自定义～为复数取模
+        friend int operator~(const Complex& opd) {
+            return sqrt(opd._real * opd._real + opd._imaginary * opd._imaginary);
+        }
+    
+    private:
+        int _real;
+        int _imaginary;
+    };
+        
+    int main() {
+        Complex c1(3,4);
+        std::cout << -c1 << std::endl;
+        std::cout << ~c1 << std::endl;
+        return 0;
+    }
+```
+* 前缀类：操作数必须是左值（因为计算后要变化），表达式的值为左值，而且就是操作数本身。运算前后操作数的值会发生变化，表达式的值是变化之后的值。
+* 后缀类：操作数是左值，表达式的值是右值，而且是操作数运算之前的历史备份。运算前后操作数的值发生变化，表达式的值变化以前的值。
+```c++
+    class Complex {
+    public:
+        Complex(int r = 0, int i = 0) : _real(r), _imaginary(i) {}
+    
+        void print() const {
+            std::cout << _real << "+" << _imaginary << "i" << std::endl;
+        }
+    
+        friend std::ostream& operator<<(std::ostream& lhs, const Complex& rhs) {
+            return lhs << rhs._real << '+' << rhs._imaginary << 'i';
+        }
+    
+        // 成员函数
+        // 前++
+        Complex& operator++() {
+            ++_real;
+            ++_imaginary;
+            return *this;
+        }
+    
+        // 全局函数
+        // 前--
+        friend Complex& operator--(Complex& opd) {
+            --opd._real;
+            --opd._imaginary;
+            return opd;
+        }
+    
+        // 成员函数
+        // 后++
+        const Complex operator++(int) {
+            Complex old = *this;
+            ++*this;
+            return old;
+        }
+    
+        // 全局函数
+        // 后--
+        friend const Complex operator--(Complex& opd, int) {
+            Complex old = opd;
+            --opd;
+            return old;
+        }
+    private:
+        int _real;
+        int _imaginary;
+    };
+    
+    int main() {
+        Complex c1(1,2), c2(30,40);
+        std::cout << ++c1 << std::endl; // 2+3i
+        std::cout << c1 << std::endl;   // 2+3i
+        ++c1 = c2;
+        std::cout << c1 << std::endl;   // 30+40i
+        ++++++++c1;
+        std::cout << c1 << std::endl;   // 34+44i
+        std::cout << --c1 <<std::endl;  // 33+43i
+        std::cout << c1 << std::endl;   // 33+43i
+        std::cout << c1++ << std::endl; // 33+43i
+        std::cout << c1 << std::endl;   // 34+44i
+        std::cout << c1-- << std::endl; // 34+44i
+        std::cout << c1 << std::endl;   // 33+43i
+        return 0;
+    }
+```
+（5）三目操作符：无法重载。  
+（6）其他：标操作符、函数操作符、类型转换操作符。
+```c++
+    class A {
+    public:
+        int& operator[](int i) {
+            return _array[i];
+        } 
+        const int& operator[](int i) const {    
+            return const_cast<A&>(*this)[i];  // 显式去常，隐式加常
+        }   
+    private:
+        int _array[10];
+    };
+    
+    class B{
+    public:
+        int operator()(int x, int y) {
+            return x+y;
+        }
+    private:
+    };
+     
+    class Integer {
+    public:
+        Integer(int i = 0): _i(i) {}
+    
+        // 类型转换操作符函数
+        operator int() const {
+            return _i;
+        }
+    
+        int _i;
+    };
+    
+    
+    int main() {
+        A a;
+        a[0] = 100;
+        a[1] = 101;
+        std::cout << a[0] << " " << a[1]<< std::endl;
+        const A& ra = a;
+        std::cout << ra[0] << " " << ra[1]<< std::endl;
+    
+        B b;
+        std::cout << b(12, 34) << std::endl;
+    
+        Integer x;
+        x = 123;
+        std::cout << x._i << std::endl;
+    
+        int y;
+        y = x;
+        std::cout << y << std::endl; 
+        return 0;
+    }
+```
+（7）不能重载的操作符：/:: /. /.* /?: /sizeof /typeid。   
+（8）操作符重载的限制。  
+* 所有操作数都是基本类型的不能重载。  
+* 无法改变操作符的优先级。  
+* 无法改变操作符的目数。  
+* 无法发明新的操作符。  
+* 保持操作符的语义一致性。   
 
 
 
