@@ -494,8 +494,60 @@ L#R -> L.operator#(R)   // 成员，左调右参
         return 0;
     }
 ```
-（7）不能重载的操作符：/:: /. /.* /?: /sizeof /typeid。   
-（8）操作符重载的限制。  
+（7）指针解引用（*）和指针间接调用（->）操作符。
+```c++
+    class B {
+    public:
+        B() : _data(1234) {}
+        
+        void foo() {
+            std::cout << "B::foo" << std::endl;
+        }
+    
+        // 唯一可带缺省值的操作符函数
+        std::string operator()(const std::string& s1="我在吃", const std::string& s2="苹果") {
+            return s1+s2;
+        }
+    
+        int _data;
+    };
+    
+    class A {
+    public:
+        A(B* b) : _pb(b) {}
+    
+        B* operator->() const {
+            return _pb;
+        }
+    
+        B& operator*() const {
+            return *_pb;
+        }
+    
+    private:
+        B* _pb;
+    };
+    
+    int main() {
+        B b;
+        A a(&b);
+        // a.operator->()->_data
+        std::cout << a->_data << std::endl;
+        // a.operator->()->foo()
+        a->foo();
+        // a.operator*()._data
+        std::cout <<  (*a)._data << std::endl;
+        // a.operator*().foo()
+        (*a).foo();
+    
+        std::cout << b() << std::endl;
+        std::cout << b("我在学习", "C++") << std::endl;
+    
+        return 0;
+    }
+```
+（8）不能重载的操作符：/:: /. /.* /?: /sizeof /typeid。   
+（9）操作符重载的限制。  
 * 所有操作数都是基本类型的不能重载。  
 * 无法改变操作符的优先级。  
 * 无法改变操作符的目数。  
