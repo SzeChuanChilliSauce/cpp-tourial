@@ -170,8 +170,90 @@ private：私有继承。
          return 0;
      }   
 ```
-* 隐藏性
-在子类中定义了和基类同名的标识符（变量、函数、类型），那么子类中标识符就会隐藏基类中的标识符。除非通过作用域限定符显式地指明所访问的标识符源自基类。
+* 隐藏性  
+在子类中定义了和基类同名的标识符（变量、函数、类型），那么子类中标识符就会隐藏基类中的标识符。除非通过作用域限定符显式地指明所访问的标识符源
+自基类。
+* 传导性  
+当子类对象被构造、析构、复制时，其基类子对像也需要同时被构造、析构、复制。  
+当通过delete操作一个指向子类对象的基类指针时，实际被执行的是基类的析构函数，该函数不会调用（传导）子类的析构函数，此子类所特有的动态资源
+将形成内存泄漏。
+```c++
+    class A {
+    public:
+        A() : _x(0) {
+            std::cout << "A缺省构造" << std::endl;
+        }
+        A(int x) : _x(x) {
+            std::cout << "A有参构造" << std::endl;
+        } 
+        A(const A& that) : _x(that._x) {
+            std::cout << "A拷贝构造" << std::endl;
+        }  
+        A& operator=(const A& rhs) {
+            std::cout << "A拷贝赋值" << std::endl;
+            _x = rhs._x;
+            return *this;
+        }  
+        ~A() {
+            std::cout << "A析构函数" << std::endl;
+        }   
+        friend std::ostream& operator<<(std::ostream& lhs, const A& rhs) {
+            return lhs << rhs._x;
+        }    
+    private:
+        int _x;
+    };
+    
+    class B: public A {
+    public:
+        // 没有指定基类的构造方式，默认用缺省方式
+        B() : _y(0) {
+            std::cout << "B缺省构造" << std::endl;
+        }   
+        // 指定基类构造方式
+        B(int x, int y) : A(x), _y(y) {
+            std::cout << "B有参构造" << std::endl;
+        } 
+        B(const B& that) : A(that), _y(that._y) {
+            std::cout << "B拷贝构造" << std::endl;
+        }  
+        B& operator=(const B& rhs) {
+            std::cout << "B拷贝赋值" << std::endl;
+            A::operator=(rhs);
+            _y = rhs._y;
+            return *this;
+        }  
+        ~B() {
+            std::cout << "B析构函数" << std::endl;
+        }   
+        friend std::ostream& operator<<(std::ostream& lhs, const B& rhs) {
+            return lhs << static_cast<const A&>(rhs) << " " << rhs._y;
+        }   
+    private:
+        int _y;
+    };
+
+    int main() {
+        std::cout << "-----1------" << std::endl;
+        B b1;
+        std::cout << "-----2------" << std::endl;
+        B b2(100, 200);
+        std::cout << "-----3------" << std::endl;
+        B b3 = b1;
+        std::cout << "-----4------" << std::endl;
+        b3 = b2;
+        std::cout << "-----5------" << std::endl;
+    
+        std::cout << b3 << std::endl;
+        std::cout << "-----6------" << std::endl;
+        A* p = new B;
+        delete p;
+        std::cout << "-----7------" << std::endl;
+        return 0;
+    }
+```
+## 7.继承方式对访控属性的影响
+
 
 
 
