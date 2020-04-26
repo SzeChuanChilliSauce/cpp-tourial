@@ -173,6 +173,45 @@ private：私有继承。
 * 隐藏性  
 在子类中定义了和基类同名的标识符（变量、函数、类型），那么子类中标识符就会隐藏基类中的标识符。除非通过作用域限定符显式地指明所访问的标识符源
 自基类。
+```c++
+    class A {
+    public:
+        void foo() {
+            std::cout << "A::foo" << std::endl;
+        }
+    
+        void bar() {}
+        int hum;
+    };
+    
+    class B : public A {
+    public:
+        using A::foo; // 名字空间声明，形成重载
+        void foo(int x) {
+            std::cout << "B::foo" << std::endl;
+            // hum = 10; // 子类隐藏基类
+            A::hum = 10;
+        }
+    
+        int bar;
+        typedef unsigned int hum;
+    };
+    
+    int main() {
+        B b;
+        // b.A::foo(); // 显式调用基类同名函数
+        b.foo(100);
+        b.foo();
+    
+        // b.bar(); // 被B中成员变量bar隐藏
+        b.A::bar();
+    
+        // b.hum = 10; // 被B中hum类型隐藏
+        b.A::hum = 10;
+    
+        return 0;
+    }
+```
 * 传导性  
 当子类对象被构造、析构、复制时，其基类子对像也需要同时被构造、析构、复制。  
 当通过delete操作一个指向子类对象的基类指针时，实际被执行的是基类的析构函数，该函数不会调用（传导）子类的析构函数，此子类所特有的动态资源
