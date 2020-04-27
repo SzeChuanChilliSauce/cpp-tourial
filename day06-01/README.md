@@ -292,7 +292,107 @@ private：私有继承。
     }
 ```
 ## 7.继承方式对访控属性的影响
+考虑继承方式：通过子类类型访问其所继承。
+```c++
+    class A { 
+        void foo() {} 
+    };
 
+    class B : public A {
+    public:
+        void bar() {
+            foo(); // 直接访问基类，不考虑继承方式
+        }   
+    };
 
+    class C : public B {
+    public:
+        void bar() {
+            foo(); // 通过子类B访问其从基类A中继承的foo，需要考虑继承方式
+        }
+    };
+
+    int main() {
+        B b;
+        b.foo(); // 通过B访问其继承的foo，需要考虑继承方式
+        return 0;
+    }
+```
+|基类|共有继承子类|保护继承子类|私有继承子类|
+|:---:|:---:|:---:|:---:|
+|共有|共有|保护|私有|
+|保护|保护|保护|私有|
+|私有|私有|私有|私有|
+```c++
+    class X {
+    public:
+        int _pub;
+    protected:
+        int _pro;
+    private:
+        int _pri;
+    };
+    
+    // 共有继承
+    class Y1 : public X {};
+    // 保护继承
+    class Y2 : protected X {};
+    // 私有继承
+    class Y3 : private X {};
+    
+    class Z1 : public Y1 {
+    public:
+        void foo() {
+            _pub = 0;
+            _pro = 0;
+            // _pri = 0; // ERROR
+        }
+    };
+    
+    class Z2 : public Y2 {
+    public:
+        void foo() {
+            _pub = 0;
+            _pro = 0;
+            // _pri = 0; // ERROR
+        }
+    };
+    
+    class Z3 : public Y3 {
+    public:
+        void foo() {
+            // _pub = 0; // ERROR
+            // _pro = 0; // ERROR
+            // _pri = 0; // ERROR
+        }
+    };
+    
+    int main() {
+        Y1 y1;
+        y1._pub = 0;
+        // y1._pro = 0; // ERROR
+        // y1._pri = 0; // ERROR
+    
+        Y2 y2;
+        // y2._pub = 0; // ERROR
+        // y2._pro = 0; // ERROR
+        // y2._pri = 0; // ERROR
+    
+        Y3 y3;
+        // y3._pub = 0; // ERROR
+        // y3._pro = 0; // ERROR
+        // y3._pri = 0; // ERROR
+    
+        X*  x = &y1;
+        // 共有继承才具有皆然性
+        // x = &y2;
+        // x = &y3;
+
+        return 0;
+    }
+```
+## 8.私有继承和保护继承
+私有继承亦称实现继承，其目的在于将基类中的共有和保护的成员于子类中私有化，防止其通过子类扩散。但是如果希望在子类的子类中可以继续访问这些成员，而只是限制在子类外部的访问，则可以将子类从基类的继承方式设置为保护继承。
+保护和私有继承不具有皆然性。
 
 
